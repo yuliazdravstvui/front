@@ -18,6 +18,10 @@ Vue.component('product', {
         premium: {
             type: Boolean,
             required: true
+        },
+        cart: {
+            type: Array,
+            required: true
         }
     },
         template: `
@@ -33,7 +37,6 @@ Vue.component('product', {
             <ul>
                <li v-for="detail in details">{{ detail }}</li>
             </ul>
-            <product-details></product-details>
             <p>Shipping: {{ shipping }}</p>
             <div
                     class="color-box"
@@ -42,9 +45,7 @@ Vue.component('product', {
                     :style="{ backgroundColor:variant.variantColor }"
                     @mouseover="updateProduct(index)">
             </div>
-            <div class="cart">
-                <p>Cart({{ cart }})</p>
-            </div>
+
             <button
                     v-on:click="addToCart"
                     :disabled="!inStock"
@@ -53,7 +54,7 @@ Vue.component('product', {
                 Add to cart
             </button>
 
-
+            <button v-on:click="deleteFromCart" class="deleteFromCart">Delete from cart</button>
 
 
         </div>
@@ -81,12 +82,19 @@ Vue.component('product', {
                     variantQuantity: 0
                 }
             ],
-            cart: 0,
         }
     },
     methods: {
         addToCart() {
-            this.cart += 1
+            this.$emit('add-to-cart',
+            this.variants[this.selectedVariant].variantId);
+
+        },
+        deleteFromCart() {
+            if (this.cart.length > 0) {
+                this.$emit('delete-from-cart', this.cart[this.cart.length - 1]);
+
+            }
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -115,7 +123,7 @@ Vue.component('product', {
             } else {
                 return 2.99
             }
-        },
+        }
     }
 })
 
@@ -123,7 +131,19 @@ Vue.component('product', {
 let app = new Vue({
     el: '#app',
     data: {
-        premium: true
+        premium: true,
+        cart: []
+    },
+    methods: {
+        updateCart(id) {
+            this.cart.push(id);
+        },
+        deleteFromCart(id) {
+            let index = this.cart.indexOf(id);
+            if (index !== -1) {
+                this.cart.splice(index, 1);
+            }
+        }
     }
 })
 
