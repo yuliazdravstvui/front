@@ -47,9 +47,10 @@ Vue.component('product-tabs', {
          <p v-if="!reviews.length">There are no reviews yet.</p>
          <ul>
            <li v-for="review in reviews">
-           <p>{{ review.name }}</p>
+           <p>Name: {{ review.name }}</p>
            <p>Rating: {{ review.rating }}</p>
-           <p>{{ review.review }}</p>
+           <p>Review: {{ review.review }}</p>
+           <p>Recommended: {{ review.recommend }}</p>
            </li>
          </ul>
        </div>
@@ -114,8 +115,9 @@ Vue.component('product-review', {
     
     <p>
       <label for="recommend">Would you recommend this product?</label><br>
-      <input type="radio" id="recommend-yes" value="yes" v-model="recommend"> <label for="recommend-yes">Yes</label><br>
-      <input type="radio" id="recommend-no" value="no" v-model="recommend"> <label for="recommend-no">No</label>
+      <div class="mark"><input type="radio" id="recommend-yes" value="yes" v-model="recommend"> <label for="recommend-yes">Yes</label><br>
+      <input type="radio" id="recommend-no" value="no" v-model="recommend"> <label for="recommend-no">No</label></div>
+      
     </p>
     
      <p>
@@ -129,6 +131,7 @@ Vue.component('product-review', {
             name: null,
             review: null,
             rating: null,
+            recommend: null,
             errors: [],
 
         }
@@ -139,16 +142,19 @@ Vue.component('product-review', {
                 let productReview = {
                     name: this.name,
                     review: this.review,
-                    rating: this.rating
+                    rating: this.rating,
+                    recommend: this.recommend,
                 }
                 eventBus.$emit('review-submitted', productReview)
-                this.name = null
-                this.review = null
-                this.rating = null
+                this.name = null;
+                this.review = null;
+                this.rating = null;
+                this.recommend = null;
             } else {
                 if(!this.name) this.errors.push("Name required.")
                 if(!this.review) this.errors.push("Review required.")
                 if(!this.rating) this.errors.push("Rating required.")
+                if(!this.recommend) this.errors.push("Recommend required.")
             }
         }
     }
@@ -210,11 +216,16 @@ Vue.component('product', {
             >
                 Add to cart
             </button>
+            
 
-            <button v-on:click="deleteFromCart" class="deleteFromCart">Delete from cart</button>
+            <button v-on:click="deleteFromCart" class="deleteFromCart">Delete cart</button>
+            <button 
+                    
+                    v-on:click="addToLike"            >
+                Add to like
+            </button>
                 <div>
-                    <h2 ><product-tabs :reviews="reviews"></product-tabs></h2>
-                                        
+                    <h2 ><product-tabs :reviews="reviews"></product-tabs></h2>             
                 </div>
         </div>
    </div>
@@ -248,6 +259,13 @@ Vue.component('product', {
         addToCart() {
             this.$emit('add-to-cart',
             this.variants[this.selectedVariant].variantId);
+
+        },
+        addToLike() {
+
+            this.$emit('add-to-like',
+                this.variants[this.selectedVariant].variantId);
+
 
         },
         deleteFromCart() {
@@ -297,11 +315,15 @@ let app = new Vue({
     el: '#app',
     data: {
         premium: true,
-        cart: []
+        cart: [],
+        like: [],
     },
     methods: {
         updateCart(id) {
             this.cart.push(id);
+        },
+        updateLike(id) {
+            this.like.push(id);
         },
         deleteFromCart(id) {
             let index = this.cart.indexOf(id);

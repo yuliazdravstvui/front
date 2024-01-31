@@ -15,7 +15,11 @@
     <div class="cart">
         <p>Cart({{ cart.length }})</p>
     </div>
-    <product :premium="premium" :cart="cart"
+    <div class="cart">
+        <p>Like({{ like.length }})</p>
+    </div>
+    <product :premium="premium" :cart="cart" :like="like"
+             @add-to-like="updateLike"
              @add-to-cart="updateCart"
              @delete-from-cart="deleteFromCart"></product>
 </div>

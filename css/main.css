@@ -87,3 +87,12 @@ textarea {
     color: #16C0B0;
     text-decoration: underline;
 }
+#recommend-yes{
+    width: 30px;
+}
+#recommend-no{
+    width: 30px;
+}
+.mark{
+    display: flex;
+}
